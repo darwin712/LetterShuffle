@@ -2,18 +2,15 @@ import pygame
 import sys
 import random
 
-# IMPORTAMOS LA LÓGICA DESDE NUESTRO OTRO ARCHIVO
 from logica import inicializar_banco_palabras, busqueda_binaria_recursiva, evaluar_intento, obtener_palabra_secreta
 
 pygame.init()
 
-# --- CONSTANTES Y DIMENSIONES ---
 ANCHO, ALTO = 600, 800
 TAMANO_CELDA = 65
 MARGEN = 5
 RADIO_ESQUINA = 4
 
-# --- TEMAS DE COLOR ---
 TEMA_CLARO = {
     "fondo": (255, 255, 255), "borde": (211, 214, 218), "borde_activo": (135, 138, 140), "texto": (18, 18, 19),
     "tecla": (211, 214, 218), "boton": (200, 200, 200), "boton_hover": (180, 180, 180),
@@ -28,22 +25,16 @@ TEMA_OSCURO = {
     "verde": (83, 141, 78), "amarillo": (181, 159, 59), "gris_estado": (58, 58, 60), "texto_resalte": (255, 255, 255)
 }
 
-ventana = pygame.display.set_mode((ANCHO, ALTO))
+ventana = pygame.display.set_mode((ANCHO, ALTO), pygame.RESIZABLE)
 pygame.display.set_caption("Iggy's Letter Shuffle!")
 
-# --- FUENTES ---
 fuente_letras = pygame.font.SysFont("Helvetica", 36, bold=True)
 fuente_teclado = pygame.font.SysFont("Helvetica", 18, bold=True)
 fuente_botones = pygame.font.SysFont("Helvetica", 14, bold=True)
 fuente_mensajes = pygame.font.SysFont("Helvetica", 18, bold=True)
 
-# --- RECTÁNGULOS DE UI ---
 rect_switch = pygame.Rect(20, 20, 60, 30) 
 rect_boton_dinamico = pygame.Rect(ANCHO - 145, ALTO - 50, 130, 35)
-
-# ==========================================
-# FUNCIONES DE DIBUJO E INTERFAZ
-# ==========================================
 
 def lerp_color(color_actual, color_objetivo, velocidad):
     return (
@@ -54,7 +45,7 @@ def lerp_color(color_actual, color_objetivo, velocidad):
 
 def dibujar_cuadricula(tema, intentos_pasados, intento_actual):
     inicio_x = (ANCHO - (5 * TAMANO_CELDA + 4 * MARGEN)) // 2
-    inicio_y = 100
+    inicio_y = max(80, int(ALTO * 0.4) - 200)
     
     for fila in range(6):
         for col in range(5):
@@ -94,11 +85,10 @@ def dibujar_cuadricula(tema, intentos_pasados, intento_actual):
                 ventana.blit(texto_surface, texto_surface.get_rect(center=rect.center))
 
 def dibujar_teclado(tema, estado_teclado):
-    # ¡AGREGAMOS LA Ñ A LA LISTA VISUAL!
     filas_teclado = ["QWERTYUIOP", "ASDFGHJKLÑ", "ZXCVBNM"]
     alto_tecla = 55
     ancho_tecla = 40
-    inicio_y_teclado = 550
+    inicio_y_teclado = max(500, int(ALTO * 0.8) - 90)
     
     for i, fila in enumerate(filas_teclado):
         offset_x = (ANCHO - (len(fila) * (ancho_tecla + MARGEN))) // 2
@@ -148,9 +138,6 @@ def dibujar_ui(tema, switch_x, mouse_pos, mouse_pressed, mensaje_superior, juego
         pygame.draw.rect(ventana, tema["borde"], fondo_msg, 2, RADIO_ESQUINA)
         ventana.blit(texto_msg, texto_msg.get_rect(center=fondo_msg.center))
 
-# ==========================================
-# LÓGICA DE REINICIO DE PARTIDA
-# ==========================================
 def reiniciar_juego():
     palabra_secreta = obtener_palabra_secreta() 
     intentos_pasados = [] 
@@ -163,10 +150,9 @@ def reiniciar_juego():
     mensaje_pantalla = ""
     return palabra_secreta, intentos_pasados, intento_actual, estado_teclado, juego_terminado, mensaje_pantalla
 
-# ==========================================
-# MÉTODO PRINCIPAL E INTEGRACIÓN
-# ==========================================
 def main():
+    global ANCHO, ALTO, ventana 
+
     reloj = pygame.time.Clock()
     
     diccionario_validacion = inicializar_banco_palabras()
@@ -200,6 +186,11 @@ def main():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+            elif evento.type == pygame.VIDEORESIZE:
+                ANCHO, ALTO = evento.w, evento.h
+                ventana = pygame.display.set_mode((ANCHO, ALTO), pygame.RESIZABLE)
+                rect_boton_dinamico.topleft = (ANCHO - 145, ALTO - 50)
                 
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if evento.button == 1: 
