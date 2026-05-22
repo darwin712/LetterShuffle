@@ -5,7 +5,7 @@ def quitar_acentos(texto):
     texto = unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('utf-8')
     return texto.upper()
 
-def generar_diccionario():
+def generar_diccionario(ruta_destino="banco_palabras.txt"):
     print("Descargando el diccionario base y generando plurales matemáticamente...")
     url = "https://raw.githubusercontent.com/javierarce/palabras/master/listado-general.txt"
     try:
@@ -45,7 +45,7 @@ def generar_diccionario():
             
         lista_final = sorted(list(palabras_validas))
         
-        with open("banco_palabras.txt", "w", encoding="utf-8") as f:
+        with open(ruta_destino, "w", encoding="utf-8") as f:
             for p in lista_final:
                 f.write(p + "\n")
                 

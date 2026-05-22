@@ -143,7 +143,6 @@ def reiniciar_juego():
     intentos_pasados = [] 
     intento_actual = ""
     
-    # ¡INICIALIZAMOS EL TECLADO CON LA Ñ INCLUIDA!
     estado_teclado = {letra: "neutro" for fila in ["QWERTYUIOP", "ASDFGHJKLÑ", "ZXCVBNM"] for letra in fila}
     
     juego_terminado = False

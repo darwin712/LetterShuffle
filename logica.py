@@ -1,6 +1,7 @@
 import os
 import random
 import diccionario
+import sys
 
 PALABRAS_TECH = [
     "ALGOR", "ARBOL", "AUDIO", "BANDA", "BUCLE", "BYTES", "CABLE", "CACHE", 
@@ -15,14 +16,22 @@ PALABRAS_TECH = [
 def obtener_palabra_secreta():
     return random.choice(PALABRAS_TECH)
 
+def obtener_ruta_diccionario():
+    if getattr(sys, 'frozen', False):
+        directorio_base = os.path.dirname(sys.executable)
+    else:
+        directorio_base = os.path.dirname(os.path.abspath(__file__))
+        
+    return os.path.join(directorio_base, "banco_palabras.txt")
+
 def inicializar_banco_palabras():
-    nombre_archivo = "banco_palabras.txt"
+    ruta_archivo = obtener_ruta_diccionario()
     
-    if not os.path.exists(nombre_archivo):
-        print(f"No se encontró '{nombre_archivo}'. Preparando entorno...")
-        diccionario.generar_diccionario()
+    if not os.path.exists(ruta_archivo):
+        print(f"No se encontró el archivo. Descargando en: {ruta_archivo}")
+        diccionario.generar_diccionario(ruta_archivo)
     
-    with open(nombre_archivo, "r", encoding="utf-8") as f:
+    with open(ruta_archivo, "r", encoding="utf-8") as f:
         palabras = [linea.strip().upper() for linea in f.readlines()]
     
     palabras.sort() 
